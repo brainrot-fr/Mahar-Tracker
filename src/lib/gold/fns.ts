@@ -30,6 +30,7 @@ export const completeOnboardingFn = createServerFn({ method: "POST" })
     gramsPerTola: number;
     tolasPerUkhiya: number;
     acceptedDisclaimer: boolean;
+    acknowledgedPromisedMahdi: boolean;
   }) => d)
   .handler(async ({ context, data }) => {
     const { completeOnboarding } = await import("./entries.server");

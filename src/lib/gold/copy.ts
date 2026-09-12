@@ -4,7 +4,7 @@ export const APP_SHORT_DESCRIPTION =
   "Record money set aside toward mahar and convert it to 24K gold-equivalent grams.";
 
 export const MAHDI_HONORIFIC = "Khalifatullah Hazrat Syed Muhammad Mahdi e Mau'ood A.S.";
-export const QASIM_HONORIFIC = "Hazrat Bandagi Miyan Syed Qasim Mujahid-e-giroh-e-Mahdavia R.H.";
+export const QASIM_HONORIFIC = "Hazrat Bandagi Miyan Syed Qasim Mujtahid-e-giroh-e-Mahdavia R.H.";
 
 export const PURITY_TRADITION = "zar-e-surkh-e-khalis";
 export const PURITY_TRADITION_LABEL = "Zar-e-surkh-e-khalis (24K)";
@@ -20,6 +20,12 @@ export const TRACKER_DISCLAIMER =
 
 export const ONBOARDING_ACCEPT_LABEL =
   "I understand this app only tracks mahar savings as their 24K gold-equivalent (zar-e-surkh-e-khalis) and does not purchase gold for me.";
+
+export const ONBOARDING_MAHDI_ACKNOWLEDGEMENT =
+  "I acknowledge Masoom-anil-khata Khalifatullah Hazrat Syed Muhammad Mahdi-e-Mau'ood (Jeevanpuri) A.S as the promised Mahdi that RasoolAllah S.A.W.S promised.";
+
+export const ONBOARDING_PRIVACY_NOTE =
+  "No data is captured for analytics, advertising, or hidden tracking. The data you enter is stored only to provide your mahar tracker, and the complete source code is open source and available for inspection on";
 
 export const UKHIYA_MAHAR: Record<
   9 | 10 | 11,
@@ -51,6 +57,7 @@ export function maharTargetLabel(ukhiya: number): string {
 export const ERRORS = {
   confirmDisclaimer:
     "Please confirm that Ukhiya tracks mahar savings as 24K gold-equivalent (zar-e-surkh-e-khalis) and does not purchase gold.",
+  confirmMahdiAcknowledgement: "Please acknowledge the promised Mahdi before continuing.",
   targetAlreadySet: "A mahar target is already set. Change it from Settings.",
   changeTargetPhrase:
     "Type CHANGE TARGET to confirm. Completed grams stay the same; remaining grams and percentage are recalculated against the new mahar.",

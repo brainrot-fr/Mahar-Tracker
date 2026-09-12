@@ -1,1 +1,0 @@
-import{Y as e,v as t}from"./copy-BHlAcvna.js";import{n}from"./skeleton-CgVGE6CI.js";e();var r=t();function i({className:e,...t}){return(0,r.jsx)(`label`,{className:n(`text-sm font-medium text-muted`,e),...t})}export{i as t};

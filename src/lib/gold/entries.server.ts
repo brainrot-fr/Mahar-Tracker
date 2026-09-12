@@ -54,9 +54,13 @@ export async function completeOnboarding(input: {
   gramsPerTola: number;
   tolasPerUkhiya: number;
   acceptedDisclaimer: boolean;
+  acknowledgedPromisedMahdi: boolean;
 }): Promise<{ profile: Profile; goal: Goal }> {
   if (!input.acceptedDisclaimer) {
     throw new Error(ERRORS.confirmDisclaimer);
+  }
+  if (!input.acknowledgedPromisedMahdi) {
+    throw new Error(ERRORS.confirmMahdiAcknowledgement);
   }
   const ukhiya = parseUkhiya(input.ukhiyaCount);
   const currency = parseCurrency(input.currency);

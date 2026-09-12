@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
+import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,8 @@ import { PERMITTED_UKHIYA, SUPPORTED_CURRENCIES } from "@/lib/gold/constants";
 import {
   MAHAR_ORIGIN,
   ONBOARDING_ACCEPT_LABEL,
+  ONBOARDING_MAHDI_ACKNOWLEDGEMENT,
+  ONBOARDING_PRIVACY_NOTE,
   PURITY_TRADITION_LABEL,
   TRACKER_DISCLAIMER,
   UKHIYA_MAHAR,
@@ -34,6 +37,7 @@ function OnboardingPage() {
   const [gramsPerTola, setGramsPerTola] = useState(11.6638);
   const [tolasPerUkhiya, setTolasPerUkhiya] = useState(11);
   const [accepted, setAccepted] = useState(false);
+  const [acknowledgedPromisedMahdi, setAcknowledgedPromisedMahdi] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
@@ -45,6 +49,7 @@ function OnboardingPage() {
           gramsPerTola,
           tolasPerUkhiya,
           acceptedDisclaimer: accepted,
+          acknowledgedPromisedMahdi,
         },
       }),
     onSuccess: async () => {
@@ -163,7 +168,7 @@ function OnboardingPage() {
       )}
 
       {step === 3 && (
-        <Card className="mt-6 space-y-4 text-sm leading-relaxed text-muted">
+        <Card className="onboarding-reveal mt-6 space-y-4 text-sm leading-relaxed text-muted">
           <p>
             Mahar: <span className="text-fg">{ukhiya} ukhiya</span>
             {selected ? ` · ${selected.who}` : ""} · {formatGrams(target)} of {PURITY_TRADITION_LABEL}.
@@ -181,6 +186,30 @@ function OnboardingPage() {
             />
             <span>{ONBOARDING_ACCEPT_LABEL}</span>
           </label>
+          <label className="flex items-start gap-3 border-t border-border pt-4 text-fg">
+            <input
+              type="checkbox"
+              className="mt-1 size-4"
+              checked={acknowledgedPromisedMahdi}
+              onChange={(e) => setAcknowledgedPromisedMahdi(e.target.checked)}
+            />
+            <span>{ONBOARDING_MAHDI_ACKNOWLEDGEMENT}</span>
+          </label>
+          <div className="flex items-start gap-3 border-t border-border pt-4 text-subtle">
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-metal" aria-hidden="true" />
+            <p>
+              {ONBOARDING_PRIVACY_NOTE}{" "}
+              <a
+                href="https://github.com/brainrot-fr/Mahar-Tracker"
+                target="_blank"
+                rel="noreferrer"
+                className="text-metal underline underline-offset-4"
+              >
+                GitHub
+              </a>
+              .
+            </p>
+          </div>
         </Card>
       )}
 
@@ -200,7 +229,7 @@ function OnboardingPage() {
           <Button
             type="button"
             className="flex-1"
-            disabled={!accepted || mutation.isPending}
+            disabled={!accepted || !acknowledgedPromisedMahdi || mutation.isPending}
             onClick={() => mutation.mutate()}
           >
             {mutation.isPending ? "Saving…" : "Start tracking mahar"}
