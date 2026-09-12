@@ -1,0 +1,16 @@
+node_modules/**
+.vercel/**
+android/.gradle/**
+android/build/**
+android/app/build/**
+android/capacitor-cordova-android-plugins/build/**
+android/key.properties
+android/*.jks
+android/*.keystore
+.env
+scripts
+migrations
+attachments
+screenshots
+AGENTS.md
+startup.sh
