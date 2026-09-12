@@ -35,6 +35,7 @@ function EntryDetailPage() {
   const [deleting, setDeleting] = useState(false);
 
   const entry = query.data?.entry;
+  const isCustomCash = query.data?.goal?.goalType === "cash";
 
   const update = useMutation({
     mutationFn: () =>
@@ -81,39 +82,39 @@ function EntryDetailPage() {
       <h1 className="mt-1 font-display text-3xl text-fg">{formatDate(entry.depositDate)}</h1>
       <div className="mt-3 flex flex-wrap gap-2">
         <Badge tone={entry.manuallyEnteredPrice ? "warn" : "muted"}>
-          {entry.manuallyEnteredPrice ? "Manual price" : "API price"}
+          {isCustomCash ? "Custom cash" : entry.manuallyEnteredPrice ? "Manual price" : "API price"}
         </Badge>
-        <Badge>{entry.providerName}</Badge>
+        {!isCustomCash && <Badge>{entry.providerName}</Badge>}
         {entry.fallbackUsed && <Badge>Fallback used</Badge>}
       </div>
 
       <Card className="mt-6 space-y-3 text-sm">
         <Row label="Money set aside toward mahar" value={formatMoney(entry.depositedAmount, entry.depositedCurrency)} />
-        <Row
+        {!isCustomCash && <Row
           label="Raw 24K consumer price"
           value={`${formatMoney(entry.goldPrice, entry.apiCurrency)} ${priceUnitLabel(entry.goldPriceUnit)}`}
-        />
-        <Row
+        />}
+        {!isCustomCash && <Row
           label="Price used for this entry"
           value={`${formatMoney(entry.normalizedPricePerGram, entry.depositedCurrency)} per gram`}
-        />
-        <Row label="24K gold-equivalent grams" value={formatGrams(entry.completedGrams, 6)} />
-        <Row
+        />}
+        <Row label={isCustomCash ? "Cash counted toward mahar" : "24K gold-equivalent grams"} value={isCustomCash ? formatMoney(entry.completedGrams, entry.depositedCurrency) : formatGrams(entry.completedGrams, 6)} />
+        {!isCustomCash && <Row
           label="Currency conversion"
           value={
             entry.exchangeRate === 1
               ? `None · price already in ${entry.depositedCurrency}`
               : `1 ${entry.apiCurrency} = ${entry.exchangeRate} ${entry.depositedCurrency}`
           }
-        />
-        <Row label="Exchange-rate time" value={formatDateTime(entry.exchangeRateTimestamp)} />
-        <Row label="Price source time" value={formatDateTime(entry.priceSourceTimestamp)} />
+        />}
+        {!isCustomCash && <Row label="Exchange-rate time" value={formatDateTime(entry.exchangeRateTimestamp)} />}
+        {!isCustomCash && <Row label="Price source time" value={formatDateTime(entry.priceSourceTimestamp)} />}
         <Row label="Created" value={formatDateTime(entry.createdAt)} />
         <Row label="Last edited" value={formatDateTime(entry.updatedAt)} />
         <Row label="Entry ID" value={entry.id} />
         <Row label="Status" value={entry.status} />
         {entry.note && <Row label="Note" value={entry.note} />}
-        {query.data?.currentValue != null && (
+        {!isCustomCash && query.data?.currentValue != null && (
           <Row
             label="Current estimated value of this entry"
             value={formatMoney(query.data.currentValue, entry.depositedCurrency)}

@@ -25,8 +25,10 @@ export const getDashboardFn = createServerFn({ method: "GET" })
 export const completeOnboardingFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((d: {
+    goalType: "gold" | "cash";
     ukhiyaCount: number;
     currency: string;
+    targetAmount: number;
     gramsPerTola: number;
     tolasPerUkhiya: number;
     acceptedDisclaimer: boolean;
@@ -89,12 +91,12 @@ export const listEntriesFn = createServerFn({ method: "GET" })
     let currentPrice: number | null = null;
     const today = new Date();
     const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-    const q = await quoteGoldPrice({
+    const q = goal?.goalType === "cash" ? null : await quoteGoldPrice({
       date: iso,
       currency: profile.preferredCurrency,
       preferredProvider: profile.selectedProvider,
     });
-    if (q.ok && q.quote.pricePerGramInDepositCurrency > 0) {
+    if (q?.ok && q.quote.pricePerGramInDepositCurrency > 0) {
       currentPrice = q.quote.pricePerGramInDepositCurrency;
     }
     return { entries, goal, currentPrice, preferredCurrency: profile.preferredCurrency };
@@ -111,13 +113,13 @@ export const getEntryFn = createServerFn({ method: "GET" })
     const [goal, profile] = await Promise.all([getActiveGoal(context.userId), ensureProfile(context.userId)]);
     const today = new Date();
     const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-    const q = await quoteGoldPrice({
+    const q = goal?.goalType === "cash" ? null : await quoteGoldPrice({
       date: iso,
       currency: entry.depositedCurrency,
       preferredProvider: profile.selectedProvider,
     });
     const currentValue =
-      q.ok && entry.status === "posted" ? entry.completedGrams * q.quote.pricePerGramInDepositCurrency : null;
+      q?.ok && entry.status === "posted" ? entry.completedGrams * q.quote.pricePerGramInDepositCurrency : null;
     return { entry, goal, currentValue };
   });
 

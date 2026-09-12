@@ -48,9 +48,11 @@ export async function getActiveGoal(userId: string): Promise<Goal | null> {
 }
 
 export async function completeOnboarding(input: {
+  goalType: "gold" | "cash";
   userId: string;
   ukhiyaCount: number;
   currency: string;
+  targetAmount: number;
   gramsPerTola: number;
   tolasPerUkhiya: number;
   acceptedDisclaimer: boolean;
@@ -64,13 +66,14 @@ export async function completeOnboarding(input: {
   }
   const ukhiya = parseUkhiya(input.ukhiyaCount);
   const currency = parseCurrency(input.currency);
+  const targetAmount = parsePositiveNumber(input.targetAmount, "Mahar target");
   const gramsPerTola = parsePositiveNumber(input.gramsPerTola, "Grams per tola");
   const tolasPerUkhiya = parsePositiveNumber(input.tolasPerUkhiya, "Tolas per ukhiya");
   const settings = await loadSettings();
   if (!settings.permittedUkhiya.includes(ukhiya)) {
     throw new Error(ERRORS.permittedTarget);
   }
-  const targetGrams = targetGramsFor(ukhiya, { gramsPerTola, tolasPerUkhiya });
+  const targetGrams = input.goalType === "cash" ? targetAmount : targetGramsFor(ukhiya, { gramsPerTola, tolasPerUkhiya });
   const sql = await getSql();
   await ensureProfile(input.userId);
   const existing = await getActiveGoal(input.userId);
@@ -80,10 +83,10 @@ export async function completeOnboarding(input: {
   const id = newId();
   const now = nowIso();
   await sql`insert into goals (
-    id, user_id, ukhiya_count, tolas_per_ukhiya, grams_per_tola, target_grams,
+    id, user_id, ukhiya_count, goal_type, target_amount, target_currency, tolas_per_ukhiya, grams_per_tola, target_grams,
     purity_label, purity_fineness, is_active, created_at, updated_at
   ) values (
-    ${id}, ${input.userId}, ${ukhiya}, ${tolasPerUkhiya}, ${gramsPerTola}, ${targetGrams},
+    ${id}, ${input.userId}, ${ukhiya}, ${input.goalType}, ${targetAmount}, ${currency}, ${tolasPerUkhiya}, ${gramsPerTola}, ${targetGrams},
     ${settings.purityLabel}, ${settings.purityFineness}, true, ${now}, ${now}
   )`;
   await sql`update profiles set preferred_currency = ${currency}, onboarding_completed_at = ${now}, updated_at = ${now}
@@ -193,6 +196,24 @@ export async function createEntry(input: {
   if (!goal) throw new Error(ERRORS.setTargetFirst);
   const profile = await ensureProfile(input.userId);
 
+  if (goal.goalType === "cash") {
+    const id = newId();
+    const now = nowIso();
+    await sql`insert into savings_entries (
+      id, user_id, goal_id, client_idempotency_key, deposit_date,
+      deposited_amount, deposited_currency, api_currency, exchange_rate, completed_grams,
+      gold_price, gold_price_unit, normalized_price_per_gram, provider_name,
+      fallback_used, manually_entered_price, note, status, created_at, updated_at
+    ) values (
+      ${id}, ${input.userId}, ${goal.id}, ${input.idempotencyKey}, ${depositDate},
+      ${amount}, ${currency}, ${currency}, 1, ${amount},
+      0, ${"per_gram"}, 0, ${"custom-cash"}, false, true, ${note}, ${"posted"}, ${now}, ${now}
+    )`;
+    const entry = await getEntry(input.userId, id);
+    if (!entry) throw new Error("Could not save custom mahar entry.");
+    return entry;
+  }
+
   let quote: PriceQuote;
   if (input.manualPrice) {
     if (!input.manualPrice.confirmed) {
@@ -292,6 +313,17 @@ export async function updateEntry(input: {
 
   if (!dateOrAmountChanged) {
     await sql`update savings_entries set note = ${note}, updated_at = ${now}
+      where id = ${current.id} and user_id = ${input.userId}`;
+    const row = await getEntry(input.userId, current.id);
+    if (!row) throw new Error(ERRORS.entryNotFound);
+    return row;
+  }
+
+  if (goal?.goalType === "cash") {
+    await sql`update savings_entries set
+      deposit_date = ${depositDate}, deposited_amount = ${amount}, deposited_currency = ${currency},
+      api_currency = ${currency}, exchange_rate = 1, completed_grams = ${amount},
+      note = ${note}, updated_at = ${now}
       where id = ${current.id} and user_id = ${input.userId}`;
     const row = await getEntry(input.userId, current.id);
     if (!row) throw new Error(ERRORS.entryNotFound);

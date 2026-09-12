@@ -96,6 +96,9 @@ export type GoalRow = {
   id: unknown;
   user_id: unknown;
   ukhiya_count: unknown;
+  goal_type: unknown;
+  target_amount: unknown;
+  target_currency: unknown;
   tolas_per_ukhiya: unknown;
   grams_per_tola: unknown;
   target_grams: unknown;
@@ -111,6 +114,9 @@ export function mapGoal(row: GoalRow): Goal {
     id: str(row.id),
     userId: str(row.user_id),
     ukhiyaCount: num(row.ukhiya_count) as PermittedUkhiya,
+    goalType: str(row.goal_type) === "cash" ? "cash" : "gold",
+    targetAmount: num(row.target_amount) || num(row.target_grams),
+    targetCurrency: str(row.target_currency) || "INR",
     tolasPerUkhiya: num(row.tolas_per_ukhiya),
     gramsPerTola: num(row.grams_per_tola),
     targetGrams: num(row.target_grams),

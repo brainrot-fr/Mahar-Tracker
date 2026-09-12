@@ -41,6 +41,7 @@ function NewEntryPage() {
 
   const preferred = bootstrap.data?.profile.preferredCurrency ?? "INR";
   const usedCurrency = currency || preferred;
+  const isCustomCash = bootstrap.data?.goal?.goalType === "cash";
 
   const previewGrams = useMemo(() => {
     const n = Number(amount);
@@ -121,15 +122,15 @@ function NewEntryPage() {
     <AppShell>
       <h1 className="font-display text-3xl text-fg">Record mahar savings</h1>
       <p className="mt-1 text-sm text-muted">
-        Enter the money you set aside toward mahar and the date. Ukhiya looks up the 24K consumer
-        buying price for zar-e-surkh-e-khalis on that date when it can.
+        Enter the money you set aside toward mahar and the date.{" "}
+        {isCustomCash ? "Custom cash tracking records the amount directly in your selected currency." : "Ukhiya looks up the 24K consumer buying price when it can."}
       </p>
 
       <form
         className="mt-6 space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
-          if (typeof navigator !== "undefined" && !navigator.onLine) {
+          if (!isCustomCash && typeof navigator !== "undefined" && !navigator.onLine) {
             queuePendingEntry(user.id, {
               idempotencyKey,
               amount: Number(amount),
@@ -194,17 +195,17 @@ function NewEntryPage() {
           <Textarea id="note" value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} />
         </div>
 
-        <Button type="button" variant="secondary" className="w-full" onClick={fetchQuote} disabled={busyQuote}>
+        {!isCustomCash && <Button type="button" variant="secondary" className="w-full" onClick={fetchQuote} disabled={busyQuote}>
           {busyQuote ? "Looking up 24K price…" : "Look up 24K price"}
-        </Button>
+        </Button>}
 
-        {quoteError && (
+        {!isCustomCash && quoteError && (
           <Card>
             <p className="text-sm text-warn">{quoteError}</p>
           </Card>
         )}
 
-        {quote && (
+        {!isCustomCash && quote && (
           <Card className="space-y-2 text-sm">
             <p className="font-medium text-fg">Price used for this mahar entry</p>
             <p className="text-muted">
@@ -233,7 +234,7 @@ function NewEntryPage() {
           </Card>
         )}
 
-        {(manualOpen || quote?.manuallyEntered) && (
+        {!isCustomCash && (manualOpen || quote?.manuallyEntered) && (
           <Card className="space-y-3">
             <p className="text-sm text-fg">Enter the 24K consumer buying price yourself</p>
             <p className="text-xs text-muted">
@@ -282,7 +283,7 @@ function NewEntryPage() {
         <Button
           type="submit"
           className="w-full"
-          disabled={save.isPending || !amount || !quote || (quote.manuallyEntered && !manualConfirmed)}
+          disabled={save.isPending || !amount || (!isCustomCash && (!quote || (quote.manuallyEntered && !manualConfirmed)))}
         >
           {save.isPending ? "Saving…" : "Save mahar entry"}
         </Button>

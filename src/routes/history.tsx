@@ -41,7 +41,7 @@ function HistoryPage() {
       runningGrams: byId.get(e.id)?.runningGrams ?? 0,
       runningCompletionPercent: byId.get(e.id)?.runningCompletionPercent ?? 0,
       currentValue:
-        query.data?.currentPrice != null && e.depositedCurrency === query.data.preferredCurrency
+        query.data?.goal?.goalType !== "cash" && query.data?.currentPrice != null && e.depositedCurrency === query.data.preferredCurrency
           ? e.completedGrams * query.data.currentPrice
           : null,
     }));
@@ -114,9 +114,9 @@ function HistoryPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-fg tabular-nums">{formatGrams(row.completedGrams)}</p>
+                    <p className="font-medium text-fg tabular-nums">{query.data?.goal?.goalType === "cash" ? formatMoney(row.completedGrams, row.depositedCurrency) : formatGrams(row.completedGrams)}</p>
                     <p className="mt-1 text-xs text-subtle">
-                      Running {formatGrams(row.runningGrams)} · {formatPercent(row.runningCompletionPercent)}
+                      Running {query.data?.goal?.goalType === "cash" ? formatMoney(row.runningGrams, row.depositedCurrency) : formatGrams(row.runningGrams)} · {formatPercent(row.runningCompletionPercent)}
                     </p>
                   </div>
                 </div>
@@ -125,9 +125,9 @@ function HistoryPage() {
                     {row.manuallyEnteredPrice ? "Manual price" : row.providerName}
                   </Badge>
                   {row.fallbackUsed && !row.manuallyEnteredPrice && <Badge>Fallback provider</Badge>}
-                  <Badge tone="metal">
+                  {query.data?.goal?.goalType !== "cash" && <Badge tone="metal">
                     {formatMoney(row.normalizedPricePerGram, row.depositedCurrency)} / g
-                  </Badge>
+                  </Badge>}
                 </div>
                 {row.currentValue != null && (
                   <p className="mt-2 text-xs text-subtle">

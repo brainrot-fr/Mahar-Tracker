@@ -20,12 +20,12 @@ export async function loadDashboard(userId: string): Promise<Dashboard | { needs
   const y = today.getFullYear();
   const m = String(today.getMonth() + 1).padStart(2, "0");
   const d = String(today.getDate()).padStart(2, "0");
-  const quote = await quoteGoldPrice({
+  const quote = goal.goalType === "cash" ? null : await quoteGoldPrice({
     date: `${y}-${m}-${d}`,
     currency: profile.preferredCurrency,
     preferredProvider: profile.selectedProvider,
   });
-  if (quote.ok) {
+  if (quote?.ok) {
     currentPricePerGram = quote.quote.pricePerGramInDepositCurrency;
     currentPriceCurrency = profile.preferredCurrency;
     currentPriceProvider = quote.quote.providerName;

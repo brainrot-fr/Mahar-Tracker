@@ -108,6 +108,7 @@ function SignedInHome() {
 }
 
 function DashboardView({ data }: { data: Dashboard }) {
+  const isCustomCash = data.goal.goalType === "cash";
   const assumptions = unitAssumptionsText({
     gramsPerTola: data.goal.gramsPerTola,
     tolasPerUkhiya: data.goal.tolasPerUkhiya,
@@ -119,20 +120,20 @@ function DashboardView({ data }: { data: Dashboard }) {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs uppercase tracking-wider text-subtle">Mahar target</p>
-          <h1 className="font-display text-2xl text-fg">{maharTargetLabel(data.targetUkhiya)}</h1>
+          <h1 className="font-display text-2xl text-fg">{isCustomCash ? "Custom cash mahar" : maharTargetLabel(data.targetUkhiya)}</h1>
         </div>
-        <Badge tone="metal">{PURITY_TRADITION_LABEL}</Badge>
+        <Badge tone="metal">{isCustomCash ? data.goal.targetCurrency : PURITY_TRADITION_LABEL}</Badge>
       </div>
-      {who && <p className="mt-1 text-sm text-muted">{who.who}</p>}
+      {!isCustomCash && who && <p className="mt-1 text-sm text-muted">{who.who}</p>}
       <p className="mt-1 text-sm text-muted">
-        {formatGrams(data.targetGrams)} · {assumptions}
+        {isCustomCash ? formatMoney(data.goal.targetAmount, data.goal.targetCurrency) : `${formatGrams(data.targetGrams)} · ${assumptions}`}
       </p>
 
       <div className="mt-6">
         <ProgressRing
           percent={data.completionPercent}
           label="Completed toward mahar"
-          sublabel={`${formatGrams(data.completedGrams)} of ${formatGrams(data.targetGrams)}`}
+          sublabel={isCustomCash ? `${formatMoney(data.completedGrams, data.goal.targetCurrency)} of ${formatMoney(data.goal.targetAmount, data.goal.targetCurrency)}` : `${formatGrams(data.completedGrams)} of ${formatGrams(data.targetGrams)}`}
         />
       </div>
 
@@ -148,16 +149,16 @@ function DashboardView({ data }: { data: Dashboard }) {
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-3">
-        <Stat label="Gold-equivalent completed" value={formatGrams(data.completedGrams)} />
-        <Stat label="Remaining toward mahar" value={formatGrams(data.remainingGrams)} />
-        <Stat
+        <Stat label={isCustomCash ? "Cash completed" : "Gold-equivalent completed"} value={isCustomCash ? formatMoney(data.completedGrams, data.goal.targetCurrency) : formatGrams(data.completedGrams)} />
+        <Stat label="Remaining toward mahar" value={isCustomCash ? formatMoney(data.remainingGrams, data.goal.targetCurrency) : formatGrams(data.remainingGrams)} />
+        {!isCustomCash && <Stat
           label={`Money set aside in ${data.preferredCurrency}`}
           value={
             preferredTotal != null
               ? formatMoney(preferredTotal, data.preferredCurrency)
               : data.totalDepositedByCurrency.map((b) => formatMoney(b.amount, b.currency)).join(" · ") || "—"
           }
-        />
+        />}
         <Stat
           label="Current estimated value"
           value={
@@ -168,7 +169,7 @@ function DashboardView({ data }: { data: Dashboard }) {
         />
       </div>
 
-      <Card className="mt-4 space-y-2">
+      {!isCustomCash && <Card className="mt-4 space-y-2">
         <p className="text-xs uppercase tracking-wider text-subtle">Market comparison</p>
         <p className="text-sm text-muted">
           Estimated market-value difference is not profit or loss. It does not mean physical gold
@@ -196,7 +197,7 @@ function DashboardView({ data }: { data: Dashboard }) {
             ? `${formatMoney(data.averageEffectivePricePerGram, data.preferredCurrency)} / g`
             : "—"}
         </p>
-      </Card>
+      </Card>}
 
       <div className="mt-4 grid grid-cols-2 gap-3">
         <Stat label="Mahar entries" value={String(data.entryCount)} />
@@ -204,7 +205,7 @@ function DashboardView({ data }: { data: Dashboard }) {
           label="Most recent entry"
           value={
             data.mostRecentDeposit
-              ? `${formatDate(data.mostRecentDeposit.depositDate)} · ${formatGrams(data.mostRecentDeposit.grams)}`
+              ? `${formatDate(data.mostRecentDeposit.depositDate)} · ${isCustomCash ? formatMoney(data.mostRecentDeposit.amount, data.goal.targetCurrency) : formatGrams(data.mostRecentDeposit.grams)}`
               : "None yet"
           }
         />
@@ -214,8 +215,7 @@ function DashboardView({ data }: { data: Dashboard }) {
         <Link to="/entries/new">Record mahar savings</Link>
       </Button>
       <p className="mt-4 text-center text-xs text-subtle">
-        Progress {formatPercent(data.completionPercent)} complete toward {data.targetUkhiya} ukhiya
-        mahar.
+        Progress {formatPercent(data.completionPercent)} complete toward {isCustomCash ? "custom cash mahar" : `${data.targetUkhiya} ukhiya mahar`}.
       </p>
     </AppShell>
   );

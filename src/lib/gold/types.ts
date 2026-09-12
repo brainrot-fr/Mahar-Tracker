@@ -26,6 +26,9 @@ export type Goal = {
   id: string;
   userId: string;
   ukhiyaCount: PermittedUkhiya;
+  goalType: "gold" | "cash";
+  targetAmount: number;
+  targetCurrency: string;
   tolasPerUkhiya: number;
   gramsPerTola: number;
   targetGrams: number;

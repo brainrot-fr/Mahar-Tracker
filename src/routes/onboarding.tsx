@@ -24,14 +24,23 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/onboarding")({ component: OnboardingPage });
 
+const PRIVACY_WORDS = "No data will be used or stored for analytics, advertising, or hidden tracking.".split(" ");
+const PRIVACY_WORD_REVEAL_DELAY = 180;
+const PRIVACY_WORD_REVEAL_DURATION = 520;
+const PRIVACY_HOLD_DURATION = 6000;
+const PRIVACY_SCREEN_DURATION =
+  (PRIVACY_WORDS.length - 1) * PRIVACY_WORD_REVEAL_DELAY + PRIVACY_WORD_REVEAL_DURATION + PRIVACY_HOLD_DURATION;
+
 function OnboardingPage() {
   const { user, isPending } = useCurrentUserState();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const bootstrap = useQuery({ queryKey: ["bootstrap"], queryFn: () => getBootstrap(), enabled: !!user });
   const [step, setStep] = useState(0);
+  const [goalType, setGoalType] = useState<"gold" | "cash">("gold");
   const [ukhiya, setUkhiya] = useState<(typeof PERMITTED_UKHIYA)[number]>(9);
   const [currency, setCurrency] = useState("INR");
+  const [targetAmount, setTargetAmount] = useState("");
   const [gramsPerTola, setGramsPerTola] = useState(11.6638);
   const [tolasPerUkhiya, setTolasPerUkhiya] = useState(11);
   const [accepted, setAccepted] = useState(false);
@@ -43,8 +52,10 @@ function OnboardingPage() {
     mutationFn: () =>
       completeOnboardingFn({
         data: {
+          goalType,
           ukhiyaCount: ukhiya,
           currency,
+          targetAmount: goalType === "cash" ? Number(targetAmount) : target,
           gramsPerTola,
           tolasPerUkhiya,
           acceptedDisclaimer: accepted,
@@ -63,7 +74,7 @@ function OnboardingPage() {
 
   useEffect(() => {
     if (!showPrivacyMessage) return;
-    const timeout = window.setTimeout(() => navigate({ to: "/" }), 2400);
+    const timeout = window.setTimeout(() => navigate({ to: "/" }), PRIVACY_SCREEN_DURATION);
     return () => window.clearTimeout(timeout);
   }, [navigate, showPrivacyMessage]);
 
@@ -72,8 +83,21 @@ function OnboardingPage() {
   if (showPrivacyMessage) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-bg px-6 text-center">
-        <h2 className="onboarding-reveal max-w-xl font-display text-3xl text-fg">
-          No data will be used or stored for analytics, advertising, or hidden tracking.
+        <h2
+          aria-label="No data will be used or stored for analytics, advertising, or hidden tracking."
+          className="max-w-xl font-display text-3xl text-fg"
+        >
+          {PRIVACY_WORDS.map((word, index) => (
+            <span
+              key={`${word}-${index}`}
+              aria-hidden="true"
+              className="onboarding-word-reveal inline-block"
+              style={{ animationDelay: `${index * PRIVACY_WORD_REVEAL_DELAY}ms` }}
+            >
+              {word}
+              {index < PRIVACY_WORDS.length - 1 ? " " : ""}
+            </span>
+          ))}
         </h2>
       </div>
     );
@@ -98,6 +122,17 @@ function OnboardingPage() {
       {step === 0 && (
         <div className="mt-6 space-y-3">
           <p className="text-sm leading-relaxed text-muted">{MAHAR_ORIGIN}</p>
+          <button
+            type="button"
+            onClick={() => setGoalType("cash")}
+            className={cn(
+              "w-full rounded-xl border p-4 text-left",
+              goalType === "cash" ? "border-accent bg-elevated" : "border-border bg-surface",
+            )}
+          >
+            <p className="font-display text-xl text-fg">Custom cash mahar</p>
+            <p className="mt-1 text-sm text-muted">Set any target amount in INR or another supported currency. No gold price lookup is needed.</p>
+          </button>
           {PERMITTED_UKHIYA.map((n) => {
             const grams = targetGramsFor(n, { gramsPerTola, tolasPerUkhiya });
             const meta = UKHIYA_MAHAR[n];
@@ -147,6 +182,24 @@ function OnboardingPage() {
 
       {step === 2 && (
         <Card className="mt-6 space-y-4">
+          {goalType === "cash" ? (
+            <div>
+              <Label htmlFor="target-amount">Custom mahar target</Label>
+              <input
+                id="target-amount"
+                type="number"
+                min={0.01}
+                step="0.01"
+                required
+                value={targetAmount}
+                onChange={(e) => setTargetAmount(e.target.value)}
+                placeholder="100000"
+                className="mt-1 h-11 w-full rounded-md border border-border bg-elevated px-3 text-fg"
+              />
+              <p className="mt-2 text-sm text-muted">Track deposits directly in {currency}; there is no gold conversion.</p>
+            </div>
+          ) : (
+            <>
           <p className="text-sm text-muted">
             These conversion values are configurable. The mahar target in grams follows them exactly.
           </p>
@@ -178,18 +231,20 @@ function OnboardingPage() {
           <p className="text-sm text-muted">
             {ukhiya} ukhiya mahar = {formatGrams(target)} of {PURITY_TRADITION_LABEL}
           </p>
+            </>
+          )}
         </Card>
       )}
 
       {step === 3 && (
-        <Card className="onboarding-reveal mt-6 space-y-4 text-sm leading-relaxed text-muted">
+        <Card className="mt-6 space-y-4 text-sm leading-relaxed text-muted">
           <p>
-            Mahar: <span className="text-fg">{ukhiya} ukhiya</span>
-            {selected ? ` · ${selected.who}` : ""} · {formatGrams(target)} of {PURITY_TRADITION_LABEL}.
+            Mahar: <span className="text-fg">{goalType === "cash" ? `Custom · ${targetAmount || "0"} ${currency}` : `${ukhiya} ukhiya`}</span>
+            {goalType === "gold" && (selected ? ` · ${selected.who}` : "") + ` · ${formatGrams(target)} of ${PURITY_TRADITION_LABEL}.`}
           </p>
-          <p>{assumptions}</p>
-          <p>{selected?.teaching}</p>
-          <p>{ZAR_E_SURKH_ORIGIN}</p>
+          {goalType === "gold" && <p>{assumptions}</p>}
+          {goalType === "gold" && <p>{selected?.teaching}</p>}
+          {goalType === "gold" && <p>{ZAR_E_SURKH_ORIGIN}</p>}
           <p>{TRACKER_DISCLAIMER}</p>
           <label className="flex items-start gap-3 text-fg">
             <input
@@ -228,7 +283,7 @@ function OnboardingPage() {
           <Button
             type="button"
             className="flex-1"
-            disabled={!accepted || !acknowledgedPromisedMahdi || mutation.isPending}
+            disabled={!accepted || !acknowledgedPromisedMahdi || mutation.isPending || (goalType === "cash" && !(Number(targetAmount) > 0))}
             onClick={() => mutation.mutate()}
           >
             {mutation.isPending ? "Saving…" : "Start tracking mahar"}

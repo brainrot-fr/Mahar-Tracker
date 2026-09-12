@@ -37,12 +37,10 @@ export const STORE_RATE_DECIMALS = 12;
 export const MILESTONES = [10, 25, 50, 75, 100] as const;
 
 export const DEFAULT_PROVIDER_PRIORITY = [
-  "metals-live",
-  "metals-api",
-  "swissquote",
+  "goldprice-dev",
   "gold-api-com",
   "coinbase",
-  "goldapi-io",
+  "swissquote",
 ] as const;
 
 export const GOLD_PRICE_UNITS = ["per_gram", "per_tola", "per_troy_ounce"] as const;

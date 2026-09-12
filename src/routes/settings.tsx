@@ -27,7 +27,7 @@ import {
   listProvidersFn,
   updatePreferencesFn,
 } from "@/lib/gold/fns";
-import { formatGrams } from "@/lib/gold/format";
+import { formatGrams, formatMoney } from "@/lib/gold/format";
 import { unitAssumptionsText } from "@/lib/gold/units";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
@@ -91,13 +91,13 @@ function SettingsPage() {
   const goal = bootstrap.data?.goal;
   const profile = bootstrap.data?.profile;
   const settings = bootstrap.data?.settings;
+  const isCustomCash = goal?.goalType === "cash";
 
   return (
     <AppShell>
       <h1 className="font-display text-3xl text-fg">Settings</h1>
       <p className="mt-1 text-sm text-muted">
-        Ukhiya tracks mahar as 24K gold-equivalent. Changing a target recalculates remaining grams against
-        the same completed gold-equivalent.
+        {isCustomCash ? "Custom cash tracking counts deposits directly in your target currency, without gold price lookups." : "Ukhiya tracks mahar as 24K gold-equivalent. Changing a target recalculates remaining grams against the same completed gold-equivalent."}
       </p>
 
       <Card className="mt-6 space-y-3 text-sm leading-relaxed text-muted">
@@ -110,9 +110,9 @@ function SettingsPage() {
       {goal && (
         <Card className="mt-4 space-y-2">
           <p className="text-xs uppercase tracking-wider text-subtle">Current mahar</p>
-          <p className="font-display text-2xl text-fg">{maharTargetLabel(goal.ukhiyaCount)}</p>
+          <p className="font-display text-2xl text-fg">{isCustomCash ? "Custom cash mahar" : maharTargetLabel(goal.ukhiyaCount)}</p>
           <p className="text-sm text-muted">
-            {formatGrams(goal.targetGrams)} of {PURITY_TRADITION_LABEL}
+            {isCustomCash ? `${formatMoney(goal.targetAmount, goal.targetCurrency)} target` : `${formatGrams(goal.targetGrams)} of ${PURITY_TRADITION_LABEL}`}
           </p>
           {UKHIYA_MAHAR[goal.ukhiyaCount as 9 | 10 | 11] && (
             <p className="text-sm text-muted">{UKHIYA_MAHAR[goal.ukhiyaCount as 9 | 10 | 11].who}</p>
@@ -123,7 +123,7 @@ function SettingsPage() {
         </Card>
       )}
 
-      <Card className="mt-4 space-y-3">
+      {!isCustomCash && <Card className="mt-4 space-y-3">
         <p className="font-medium text-fg">Change mahar target</p>
         <p className="text-sm text-muted">
           Completed grams on existing entries stay as they were recorded. Remaining grams and the
@@ -145,7 +145,7 @@ function SettingsPage() {
         <Button type="button" variant="secondary" disabled={change.isPending} onClick={() => change.mutate()}>
           Update mahar
         </Button>
-      </Card>
+      </Card>}
 
       {profile && (
         <Card className="mt-4 space-y-3">
