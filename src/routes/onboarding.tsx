@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
-import { ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/shell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,7 +12,6 @@ import {
   MAHAR_ORIGIN,
   ONBOARDING_ACCEPT_LABEL,
   ONBOARDING_MAHDI_ACKNOWLEDGEMENT,
-  ONBOARDING_PRIVACY_NOTE,
   PURITY_TRADITION_LABEL,
   TRACKER_DISCLAIMER,
   UKHIYA_MAHAR,
@@ -39,6 +37,7 @@ function OnboardingPage() {
   const [accepted, setAccepted] = useState(false);
   const [acknowledgedPromisedMahdi, setAcknowledgedPromisedMahdi] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPrivacyMessage, setShowPrivacyMessage] = useState(false);
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -57,13 +56,28 @@ function OnboardingPage() {
         queryClient.invalidateQueries({ queryKey: ["bootstrap"] }),
         queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
       ]);
-      await navigate({ to: "/" });
+      setShowPrivacyMessage(true);
     },
     onError: (err) => setError(err instanceof Error ? err.message : "Could not save"),
   });
 
+  useEffect(() => {
+    if (!showPrivacyMessage) return;
+    const timeout = window.setTimeout(() => navigate({ to: "/" }), 2400);
+    return () => window.clearTimeout(timeout);
+  }, [navigate, showPrivacyMessage]);
+
   if (isPending) return <AppShell><div className="h-40 animate-pulse rounded-xl bg-elevated" /></AppShell>;
   if (!user) return <RedirectToSignIn />;
+  if (showPrivacyMessage) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-bg px-6 text-center">
+        <h2 className="onboarding-reveal max-w-xl font-display text-3xl text-fg">
+          No data will be used or stored for analytics, advertising, or hidden tracking.
+        </h2>
+      </div>
+    );
+  }
   if (bootstrap.data?.goal && bootstrap.data.profile.onboardingCompletedAt) {
     return <Navigate to="/" />;
   }
@@ -76,7 +90,7 @@ function OnboardingPage() {
   return (
     <AppShell>
       <p className="text-xs uppercase tracking-wider text-subtle">Set up · {steps[step]}</p>
-      <h1 className="mt-1 font-display text-3xl text-fg">Choose your mahar</h1>
+      <h1 className="mt-1 font-display text-3xl text-fg">Choose The mount of mahar you need to pay</h1>
       <p className="mt-2 text-sm text-muted">
         Version 1 uses one mahar target. You can change it later with an explicit confirmation.
       </p>
@@ -195,21 +209,6 @@ function OnboardingPage() {
             />
             <span>{ONBOARDING_MAHDI_ACKNOWLEDGEMENT}</span>
           </label>
-          <div className="flex items-start gap-3 border-t border-border pt-4 text-subtle">
-            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-metal" aria-hidden="true" />
-            <p>
-              {ONBOARDING_PRIVACY_NOTE}{" "}
-              <a
-                href="https://github.com/brainrot-fr/Mahar-Tracker"
-                target="_blank"
-                rel="noreferrer"
-                className="text-metal underline underline-offset-4"
-              >
-                GitHub
-              </a>
-              .
-            </p>
-          </div>
         </Card>
       )}
 
