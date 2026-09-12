@@ -29,8 +29,9 @@ and in the bottom navigation. No APK binary is committed to this repository.
 
 ## Android APK
 
-This project uses Capacitor as a native Android shell around the deployed web app. Set
-CAPACITOR_SERVER_URL to the deployed HTTPS app URL before syncing the Android project, then run:
+This project uses Capacitor as a native Android shell around the deployed web app. The Capacitor
+configuration defaults to `https://mahar-tracker.vercel.app`; set `CAPACITOR_SERVER_URL` only when
+using a different deployment, then run:
 
 ```bash
 npm run android:build
