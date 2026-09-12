@@ -95,7 +95,6 @@ function OnboardingPage() {
               style={{ animationDelay: `${index * PRIVACY_WORD_REVEAL_DELAY}ms` }}
             >
               {word}
-              {index < PRIVACY_WORDS.length - 1 ? " " : ""}
             </span>
           ))}
         </h2>
@@ -140,10 +139,15 @@ function OnboardingPage() {
               <button
                 key={n}
                 type="button"
-                onClick={() => setUkhiya(n)}
+                onClick={() => {
+                  setGoalType("gold");
+                  setUkhiya(n);
+                }}
                 className={cn(
                   "w-full rounded-xl border p-4 text-left",
-                  ukhiya === n ? "border-accent bg-elevated" : "border-border bg-surface",
+                  goalType === "gold" && ukhiya === n
+                    ? "border-accent bg-elevated"
+                    : "border-border bg-surface",
                 )}
               >
                 <p className="font-display text-xl text-fg">{n} ukhiya</p>
