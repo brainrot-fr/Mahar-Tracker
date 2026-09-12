@@ -10,13 +10,33 @@ const supabaseAnonKey = configuredAnonKey || "missing-supabase-key";
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     flowType: "pkce",
-    detectSessionInUrl: true,
+    detectSessionInUrl: false,
     persistSession: true,
     autoRefreshToken: true,
   },
 });
 
+export async function exchangeOAuthCode(callbackUrl: string, cleanBrowserUrl = false): Promise<void> {
+  const callback = new URL(callbackUrl);
+  const code = callback.searchParams.get("code");
+  if (!code) return;
+
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) throw error;
+
+  if (cleanBrowserUrl && typeof window !== "undefined") {
+    callback.searchParams.delete("code");
+    callback.searchParams.delete("state");
+    window.history.replaceState({}, document.title, `${callback.pathname}${callback.search}${callback.hash}`);
+  }
+}
+
+export const oauthRedirectReady =
+  typeof window !== "undefined" && !Capacitor.isNativePlatform()
+    ? exchangeOAuthCode(window.location.href, true)
+    : Promise.resolve();
+
 export const supabaseRedirectUrl = () =>
   Capacitor.isNativePlatform()
     ? "com.mahartracker.app://auth/callback"
-    : import.meta.env.VITE_SUPABASE_REDIRECT_URL || window.location.origin;
+    : window.location.origin;

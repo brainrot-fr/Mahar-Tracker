@@ -4,16 +4,21 @@ import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { nitro } from "nitro/vite";
 
-export default defineConfig(({ command, isPreview }) => ({
+export default defineConfig(({ command, isPreview, mode }) => {
+  const isCapacitor = mode === "capacitor";
+
+  return {
   server: { host: "0.0.0.0", port: 3000, strictPort: true },
   preview: { host: "127.0.0.1", port: 8081, strictPort: true },
+  build: { outDir: isCapacitor ? ".output/public" : undefined },
   resolve: { tsconfigPaths: true },
   plugins: [
     tailwindcss(),
     tanstackStart(),
-    ...(command === "build" || isPreview
+    ...(!isCapacitor && (command === "build" || isPreview)
       ? [nitro({ preset: "vercel", serverDir: "./server" })]
       : []),
     viteReact(),
   ],
-}));
+  };
+});

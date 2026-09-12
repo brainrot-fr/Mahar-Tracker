@@ -5,15 +5,19 @@ An app to track the payment of 9 or 10 or 11 ukhiya gold zar-e-surkh-e-khalis fo
 ## Supabase setup
 
 Create `.env` from `.env.example` and set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
-`SUPABASE_DB_URL`, and `VITE_SUPABASE_REDIRECT_URL` from your Supabase project. For a local
-setup using the redirect URL you configured, the last value can be `http://localhost:3000`.
+and `SUPABASE_DB_URL` from your Supabase project. Web sign-in returns to the current site
+origin automatically, while the Android build uses `com.mahartracker.app://auth/callback`.
 
 For `SUPABASE_DB_URL`, use Supabase Connect's **transaction pooler** URL on port `6543`, not
 `db.<project-ref>.supabase.co:5432`. The direct database hostname may resolve only to IPv6 on
 some networks. URL-encode special password characters, for example `@` as `%40`.
 
-Enable Google under Supabase Auth > Providers and register the same redirect URL with the Google
-OAuth client. Apply `migrations/0002_ukhiya.sql`, `migrations/0003_refresh_gold_provider.sql`,
+Enable Google under Supabase Auth > Providers. In Supabase Auth > URL Configuration, set the Site
+URL to the deployed app URL and add both the deployed app URL and
+`com.mahartracker.app://auth/callback` to the Redirect URLs. In the Google OAuth client, register
+the Supabase callback URL shown on the Google provider page (normally
+`https://<project-ref>.supabase.co/auth/v1/callback`), not the app URL. Apply
+`migrations/0002_ukhiya.sql`, `migrations/0003_refresh_gold_provider.sql`,
 and `migrations/0004_add_live_metals_provider.sql` in the Supabase SQL editor. Supabase owns all
 email/password and Google sessions; the server verifies the Supabase access token before every
 per-user query.

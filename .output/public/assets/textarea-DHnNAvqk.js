@@ -1,0 +1,1 @@
+import{Y as e,v as t}from"./copy-BHlAcvna.js";import{n}from"./skeleton-BZ6Rvc5P.js";e();var r=t();function i({className:e,...t}){return(0,r.jsx)(`textarea`,{className:n(`min-h-24 w-full rounded-md border border-border bg-elevated px-3 py-2 text-base text-fg placeholder:text-subtle`,`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`,e),...t})}export{i as t};

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase, supabaseConfigured } from "@/lib/supabase/client";
+import { oauthRedirectReady, supabase, supabaseConfigured } from "@/lib/supabase/client";
 
 /** Normalized user shape used across the app, auth on or off. */
 export type AppUser = {
@@ -55,21 +55,26 @@ export function useCurrentUserState(): CurrentUserState {
       return;
     }
     let mounted = true;
-    void supabase.auth.getUser().then(({ data }) => {
-      if (!mounted) return;
-      setState({
-        user: data.user
-          ? {
-              id: data.user.id,
-              displayName: data.user.user_metadata.full_name ?? data.user.user_metadata.name ?? null,
-              primaryEmail: data.user.email ?? null,
-              profileImageUrl: data.user.user_metadata.avatar_url ?? null,
-              isDevFallback: false,
-            }
-          : null,
-        isPending: false,
+    void oauthRedirectReady
+      .then(() => supabase.auth.getUser())
+      .then(({ data }) => {
+        if (!mounted) return;
+        setState({
+          user: data.user
+            ? {
+                id: data.user.id,
+                displayName: data.user.user_metadata.full_name ?? data.user.user_metadata.name ?? null,
+                primaryEmail: data.user.email ?? null,
+                profileImageUrl: data.user.user_metadata.avatar_url ?? null,
+                isDevFallback: false,
+              }
+            : null,
+          isPending: false,
+        });
+      })
+      .catch(() => {
+        if (mounted) setState({ user: null, isPending: false });
       });
-    });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
       const user = session?.user;

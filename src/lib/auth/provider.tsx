@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { App } from "@capacitor/app";
 import { useEffect } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { exchangeOAuthCode } from "@/lib/supabase/client";
 
 /**
  * App-wide client provider mounted once near the root (in `src/routes/__root.tsx`):
@@ -17,9 +17,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let listener: { remove: () => Promise<void> } | undefined;
     void App.addListener("appUrlOpen", ({ url }) => {
-      const callback = new URL(url);
-      const code = callback.searchParams.get("code");
-      if (code) void supabase.auth.exchangeCodeForSession(code);
+      void exchangeOAuthCode(url);
     }).then((handle) => {
       listener = handle;
     });

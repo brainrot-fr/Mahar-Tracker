@@ -61,10 +61,11 @@ function Landing() {
         <p className="text-sm leading-relaxed text-muted">{TRACKER_DISCLAIMER}</p>
       </Card>
 
-      <div className="mt-8 space-y-3">
-        <Button asChild variant="ghost" className="w-full">
-          <Link to="/login">Email and password</Link>
+      <div className="mt-8 flex flex-col items-center gap-3">
+        <Button asChild className="w-full max-w-sm">
+          <Link to="/login">Sign in or create an account</Link>
         </Button>
+        <p className="text-center text-xs text-subtle">Google sign-in and email/password are available.</p>
       </div>
       <p className="mt-8 text-xs leading-relaxed text-subtle">
         Default units: 1 ukhiya = 11 tolas, 1 tola = 11.6638 grams. Those values are confirmed during

@@ -5,7 +5,7 @@ const serverUrl = process.env.CAPACITOR_SERVER_URL?.trim();
 const config: CapacitorConfig = {
   appId: "com.mahartracker.app",
   appName: "Mahar Tracker",
-  webDir: ".vercel/output/static",
+  webDir: ".output/public",
   ...(serverUrl
     ? {
         server: {
