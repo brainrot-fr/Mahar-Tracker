@@ -101,7 +101,7 @@ function SignedInHome() {
   }
   const data = dash.data;
   if (!data) return null;
-  if ("needsOnboarding" in data) {
+  if ("needsOnboarding" in data || !data.goal) {
     return <Navigate to="/onboarding" />;
   }
   return <DashboardView data={data} />;
