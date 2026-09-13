@@ -39,38 +39,44 @@ function Home() {
 
 function Landing() {
   return (
-    <main className="mx-auto min-h-dvh max-w-6xl bg-bg px-5 pb-16 pt-12 md:px-8">
-      <p className="font-display text-sm tracking-[0.18em] text-metal uppercase">{APP_NAME}</p>
-      <h1 className="mt-4 max-w-3xl font-display text-4xl leading-tight text-fg">
-        Track mahar toward 9, 10, or 11 ukhiya of zar-e-surkh-e-khalis.
-      </h1>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{MAHAR_ORIGIN}</p>
-      <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted">{ZAR_E_SURKH_ORIGIN}</p>
+    <main className="mx-auto flex min-h-dvh max-w-6xl justify-center bg-bg px-5 pb-16 pt-12 md:px-8">
+      <div className="w-full max-w-2xl text-center">
+        <p className="font-display text-sm tracking-[0.18em] text-metal uppercase">{APP_NAME}</p>
+        <h1 className="mt-4 max-w-3xl font-display text-4xl leading-tight text-fg">
+          Track mahar toward 9, 10, or 11 ukhiya of zar-e-surkh-e-khalis.
+        </h1>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted">{MAHAR_ORIGIN}</p>
+        <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-muted">{ZAR_E_SURKH_ORIGIN}</p>
 
-      <div className="mt-6 grid gap-2">
-        {([9, 10, 11] as const).map((n) => (
-          <div key={n} className="flex items-baseline justify-between rounded-xl border border-border bg-surface px-4 py-3">
-            <p className="font-display text-lg text-fg">{n} ukhiya</p>
-            <p className="text-sm text-muted">{UKHIYA_MAHAR[n].whoShort}</p>
+        <div className="mx-auto mt-8 grid max-w-xl gap-2 text-left">
+          {([9, 10, 11] as const).map((n) => (
+            <div key={n} className="flex items-baseline justify-between rounded-xl border border-border bg-surface px-4 py-3">
+              <p className="font-display text-lg text-fg">{n} ukhiya</p>
+              <p className="text-sm text-muted">{UKHIYA_MAHAR[n].whoShort}</p>
+            </div>
+          ))}
+          <div className="flex items-baseline justify-between rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="font-display text-lg text-fg">Custom cash mahar</p>
+            <p className="text-sm text-muted">Any amount</p>
           </div>
-        ))}
-      </div>
+        </div>
 
-      <Card className="mt-8 max-w-2xl space-y-3">
-        <p className="text-sm font-medium text-fg">This is a mahar tracker, not a gold shop.</p>
-        <p className="text-sm leading-relaxed text-muted">{TRACKER_DISCLAIMER}</p>
-      </Card>
+        <Card className="mx-auto mt-8 max-w-2xl space-y-3 text-left">
+          <p className="text-sm font-medium text-fg">This is a mahar tracker, not a gold shop.</p>
+          <p className="text-sm leading-relaxed text-muted">{TRACKER_DISCLAIMER}</p>
+        </Card>
 
-      <div className="mt-8 flex flex-col items-center gap-3">
-        <Button asChild className="w-full sm:w-auto sm:min-w-[280px]">
-          <Link to="/login">Sign in or create an account</Link>
-        </Button>
-        <p className="text-center text-xs text-subtle">Google sign-in and email/password are available.</p>
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <Button asChild className="w-full sm:w-auto sm:min-w-[280px]">
+            <Link to="/login">Sign in or create an account</Link>
+          </Button>
+          <p className="text-center text-xs text-subtle">Google sign-in and email/password are available.</p>
+        </div>
+        <p className="mx-auto mt-8 max-w-2xl text-xs leading-relaxed text-subtle">
+          Default units: 1 ukhiya = 11 tolas, 1 tola = 11.6638 grams. Those values are confirmed during
+          setup and can be configured. Purity is {PURITY_TRADITION_LABEL}.
+        </p>
       </div>
-      <p className="mt-8 max-w-2xl text-xs leading-relaxed text-subtle">
-        Default units: 1 ukhiya = 11 tolas, 1 tola = 11.6638 grams. Those values are confirmed during
-        setup and can be configured. Purity is {PURITY_TRADITION_LABEL}.
-      </p>
     </main>
   );
 }

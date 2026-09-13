@@ -1,4 +1,5 @@
 import { getSql } from "@/lib/db";
+import { deleteSupabaseUser } from "@/lib/supabase/server";
 import { gramsFromQuote } from "./calc";
 import type { Goal, PriceQuote, Profile, SavingsEntry } from "./types";
 import { mapEntry, mapGoal, mapProfile, mapSettings, type EntryRow, type GoalRow, type ProfileRow } from "./map";
@@ -414,6 +415,7 @@ export async function deleteAccount(userId: string, confirmPhrase: string): Prom
   if (confirmPhrase !== "DELETE ACCOUNT") {
     throw new Error(ERRORS.typeDeleteAccount);
   }
+  await deleteSupabaseUser(userId);
   const sql = await getSql();
   await sql`delete from savings_entries where user_id = ${userId}`;
   await sql`delete from goals where user_id = ${userId}`;

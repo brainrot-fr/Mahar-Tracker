@@ -30,7 +30,7 @@ export async function signInWithGoogle(): Promise<void> {
  * Rejects if the server does not confirm sign-out.
  */
 export async function signOut(redirectTo = "/"): Promise<void> {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut({ scope: "local" });
   if (error) throw new Error(error.message ?? "Sign-out failed");
   window.location.href = redirectTo;
 }

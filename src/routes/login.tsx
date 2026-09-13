@@ -22,6 +22,7 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [postAuthRoute, setPostAuthRoute] = useState<"/" | "/onboarding">("/");
 
   if (isPending) {
     return (
@@ -31,7 +32,7 @@ function Login() {
     );
   }
   if (user) {
-    return <Navigate to="/" />;
+    return <Navigate to={postAuthRoute} replace />;
   }
 
   async function onEmail(e: React.FormEvent) {
@@ -41,12 +42,18 @@ function Login() {
     setBusy(true);
     try {
       if (mode === "up") {
-        const { error: err } = await supabase.auth.signUp({
+        setPostAuthRoute("/onboarding");
+        const { data, error: err } = await supabase.auth.signUp({
           email,
           password,
           options: { data: { full_name: name || email.split("@")[0] } },
         });
         if (err) throw new Error(err.message ?? "Could not create account");
+        if (data.session) {
+          await navigate({ to: "/onboarding", replace: true });
+          return;
+        }
+        setPostAuthRoute("/");
         setMessage("Account created. Check your email to confirm it, then sign in.");
         setMode("in");
         setPassword("");
