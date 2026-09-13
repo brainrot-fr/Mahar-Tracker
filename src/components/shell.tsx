@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           ) : null}
         </div>
       </header>
-      <main className="mx-auto w-full flex-1 px-4 pb-28 pt-4 md:max-w-5xl md:px-8 md:pb-10 md:pt-8">
+      <main className="mx-auto w-full flex-1 px-4 pb-28 pt-4 md:max-w-2xl md:px-8 md:pb-10 md:pt-8">
         {children}
       </main>
       <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-6xl border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">

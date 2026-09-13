@@ -41,11 +41,11 @@ function Landing() {
   return (
     <main className="mx-auto min-h-dvh max-w-6xl bg-bg px-5 pb-16 pt-12 md:px-8">
       <p className="font-display text-sm tracking-[0.18em] text-metal uppercase">{APP_NAME}</p>
-      <h1 className="mt-4 font-display text-4xl leading-tight text-fg">
+      <h1 className="mt-4 max-w-3xl font-display text-4xl leading-tight text-fg">
         Track mahar toward 9, 10, or 11 ukhiya of zar-e-surkh-e-khalis.
       </h1>
-      <p className="mt-4 text-base leading-relaxed text-muted">{MAHAR_ORIGIN}</p>
-      <p className="mt-3 text-base leading-relaxed text-muted">{ZAR_E_SURKH_ORIGIN}</p>
+      <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{MAHAR_ORIGIN}</p>
+      <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted">{ZAR_E_SURKH_ORIGIN}</p>
 
       <div className="mt-6 grid gap-2">
         {([9, 10, 11] as const).map((n) => (
@@ -56,18 +56,18 @@ function Landing() {
         ))}
       </div>
 
-      <Card className="mt-8 space-y-3">
+      <Card className="mt-8 max-w-2xl space-y-3">
         <p className="text-sm font-medium text-fg">This is a mahar tracker, not a gold shop.</p>
         <p className="text-sm leading-relaxed text-muted">{TRACKER_DISCLAIMER}</p>
       </Card>
 
       <div className="mt-8 flex flex-col items-center gap-3">
-        <Button asChild className="w-full max-w-sm">
+        <Button asChild className="w-full sm:w-auto sm:min-w-[280px]">
           <Link to="/login">Sign in or create an account</Link>
         </Button>
         <p className="text-center text-xs text-subtle">Google sign-in and email/password are available.</p>
       </div>
-      <p className="mt-8 text-xs leading-relaxed text-subtle">
+      <p className="mt-8 max-w-2xl text-xs leading-relaxed text-subtle">
         Default units: 1 ukhiya = 11 tolas, 1 tola = 11.6638 grams. Those values are confirmed during
         setup and can be configured. Purity is {PURITY_TRADITION_LABEL}.
       </p>
@@ -148,7 +148,7 @@ function DashboardView({ data }: { data: Dashboard }) {
         ))}
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-3">
+      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label={isCustomCash ? "Cash completed" : "Gold-equivalent completed"} value={isCustomCash ? formatMoney(data.completedGrams, data.goal.targetCurrency) : formatGrams(data.completedGrams)} />
         <Stat label="Remaining toward mahar" value={isCustomCash ? formatMoney(data.remainingGrams, data.goal.targetCurrency) : formatGrams(data.remainingGrams)} />
         {!isCustomCash && <Stat
@@ -211,7 +211,7 @@ function DashboardView({ data }: { data: Dashboard }) {
         />
       </div>
 
-      <Button asChild className="mt-8 w-full">
+      <Button asChild className="mt-8 flex w-full sm:mx-auto sm:w-fit sm:min-w-[280px]">
         <Link to="/entries/new">Record mahar savings</Link>
       </Button>
       <p className="mt-4 text-center text-xs text-subtle">
