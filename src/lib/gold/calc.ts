@@ -1,6 +1,6 @@
-import { STORE_GRAM_DECIMALS, STORE_MONEY_DECIMALS, STORE_RATE_DECIMALS } from "./constants";
-import type { Dashboard, Goal, PriceQuote, SavingsEntry } from "./types";
-import { roundTo, storeGrams } from "./units";
+import { STORE_GRAM_DECIMALS, STORE_MONEY_DECIMALS, STORE_RATE_DECIMALS } from "./constants.ts";
+import type { Dashboard, Goal, PriceQuote, SavingsEntry } from "./types.ts";
+import { roundTo, storeGrams } from "./units.ts";
 
 export function goldEquivalentGrams(depositedAmount: number, pricePerGram: number): number {
   if (!(depositedAmount > 0)) throw new Error("Deposit amount must be greater than zero.");

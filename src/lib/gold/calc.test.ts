@@ -8,11 +8,11 @@ import {
   estimatedValueDifference,
   goldEquivalentGrams,
   remainingGrams,
-} from "./calc";
-import { DEFAULT_UNITS, normalizePricePerGram, targetGramsFor, unitAssumptionsText } from "./units";
-import type { Goal, Profile, SavingsEntry } from "./types";
-import { PERMITTED_UKHIYA } from "./constants";
-import type { AppSettings } from "./types";
+} from "./calc.ts";
+import { DEFAULT_UNITS, normalizePricePerGram, targetGramsFor, unitAssumptionsText } from "./units.ts";
+import type { Goal, Profile, SavingsEntry } from "./types.ts";
+import { PERMITTED_UKHIYA } from "./constants.ts";
+import type { AppSettings } from "./types.ts";
 
 describe("unit conversion", () => {
   it("computes published default targets from configurable units", () => {

@@ -1,4 +1,4 @@
-export { APP_NAME, APP_TAGLINE, APP_SHORT_DESCRIPTION } from "./copy";
+export { APP_NAME, APP_TAGLINE, APP_SHORT_DESCRIPTION } from "./copy.ts";
 
 /** Default traditional-unit assumptions. Override per goal, never scatter literals. */
 export const DEFAULT_GRAMS_PER_TOLA = 11.6638;

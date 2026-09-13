@@ -3,11 +3,12 @@ import {
   DEFAULT_TOLAS_PER_UKHIYA,
   PERMITTED_UKHIYA,
   STORE_GRAM_DECIMALS,
+  STORE_MONEY_DECIMALS,
   TROY_OUNCE_GRAMS,
   type PermittedUkhiya,
-} from "./constants";
-import type { GoldPriceUnit } from "./constants";
-import type { UnitConfig } from "./types";
+} from "./constants.ts";
+import type { GoldPriceUnit } from "./constants.ts";
+import type { UnitConfig } from "./types.ts";
 
 export const DEFAULT_UNITS: UnitConfig = {
   gramsPerTola: DEFAULT_GRAMS_PER_TOLA,
@@ -59,10 +60,10 @@ export function normalizePricePerGram(
       return rawPrice;
     case "per_tola":
       if (units.gramsPerTola <= 0) throw new Error("Grams per tola must be greater than zero.");
-      return rawPrice / units.gramsPerTola;
+      return roundTo(rawPrice / units.gramsPerTola, STORE_MONEY_DECIMALS);
     case "per_troy_ounce":
       if (units.troyOunceGrams <= 0) throw new Error("Troy ounce grams must be greater than zero.");
-      return rawPrice / units.troyOunceGrams;
+      return roundTo(rawPrice / units.troyOunceGrams, STORE_MONEY_DECIMALS);
     default: {
       const _exhaustive: never = unit;
       throw new Error(`Unsupported gold-price unit: ${_exhaustive}`);
