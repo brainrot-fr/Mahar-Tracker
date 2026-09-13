@@ -61,8 +61,8 @@ jobs:
           echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
           echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
 
-      - name: Build signed Android artifacts
-        run: npm run android:sync && cd android && ./gradlew assembleRelease bundleRelease -PversionCode="$VERSION_CODE" -PversionName="$VERSION_NAME"
+      - name: Build signed Android APK
+        run: npm run android:sync && cd android && ./gradlew assembleRelease -PversionCode="$VERSION_CODE" -PversionName="$VERSION_NAME"
 
       - name: Publish GitHub release
         env:
@@ -70,6 +70,5 @@ jobs:
         run: |
           gh release create "${GITHUB_REF_NAME}" \
             android/app/build/outputs/apk/release/app-release.apk \
-            android/app/build/outputs/bundle/release/app-release.aab \
             --title "Mahar Tracker ${GITHUB_REF_NAME}" \
             --generate-notes

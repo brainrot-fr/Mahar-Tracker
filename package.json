@@ -15,7 +15,6 @@
     "android:open": "npx cap open android",
     "android:build": "npm run android:sync && cd android && JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-21-openjdk} PATH=${JAVA_HOME:-/usr/lib/jvm/java-21-openjdk}/bin:$PATH ./gradlew assembleDebug",
     "android:release": "npm run android:sync && cd android && JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-21-openjdk} PATH=${JAVA_HOME:-/usr/lib/jvm/java-21-openjdk}/bin:$PATH ./gradlew assembleRelease",
-    "android:aab": "npm run android:sync && cd android && JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-21-openjdk} PATH=${JAVA_HOME:-/usr/lib/jvm/java-21-openjdk}/bin:$PATH ./gradlew bundleRelease",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",

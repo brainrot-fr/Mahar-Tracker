@@ -48,14 +48,14 @@ project with `npm run android:open`. Add `com.mahartracker.app://auth/callback` 
 redirect URLs and configure the Google provider before testing Google sign-in in the APK.
 Capacitor 8 requires JDK 21; `scripts/setup-android-arch.sh` installs and selects it on Arch Linux.
 
-For a release APK or Play Store bundle, copy `android/key.properties.example` to
-`android/key.properties`, fill in a private upload keystore, then run `npm run android:release`
-or `npm run android:aab`. Without `key.properties`, Gradle produces an unsigned release artifact.
+For a release APK, copy `android/key.properties.example` to `android/key.properties`, fill in a
+private signing keystore, then run `npm run android:release`. Without `key.properties`, Gradle
+produces an unsigned release artifact.
 
 ## GitHub Releases
 
-The `Android release` workflow builds and publishes a signed APK and AAB whenever a tag such as
-`v1.0.0` is pushed. Configure these GitHub Actions values before creating the first tag:
+The `Android release` workflow builds and publishes a signed APK whenever a tag such as `v1.0.0` is
+pushed. Configure these GitHub Actions values before creating the first tag:
 
 - Repository variable `CAPACITOR_SERVER_URL` (optional; defaults to the production URL)
 - Repository variable `VITE_SUPABASE_URL`
@@ -63,8 +63,8 @@ The `Android release` workflow builds and publishes a signed APK and AAB wheneve
   `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`
 
 Encode the upload keystore for `ANDROID_KEYSTORE_BASE64` with `base64 -w 0 your-upload-key.jks`.
-The workflow uploads the APK and AAB to the GitHub release. Set this one-time Vercel environment
-variable for the production web deployment:
+The workflow uploads the APK to the GitHub release. Set this one-time Vercel environment variable
+for the production web deployment:
 
 `VITE_ANDROID_APK_URL=https://github.com/brainrot-fr/Mahar-Tracker/releases/latest/download/app-release.apk`
 
