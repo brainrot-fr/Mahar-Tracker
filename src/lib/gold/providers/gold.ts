@@ -102,19 +102,22 @@ export class GoldPriceDevProvider implements GoldPriceProvider {
       return false;
     }
   }
-  async getCurrentPrice(_currency?: string, _units?: UnitConfig): Promise<GoldPriceResult> {
+  async getCurrentPrice(currency: string, _units: UnitConfig): Promise<GoldPriceResult> {
     const key = envSecret("GOLDPRICE_DEV_API_KEY");
     const { data } = await fetchJson<{
       symbols?: Array<{ quote_currency?: string; unit?: string; price?: string; computed_at?: string; is_stale?: boolean }>;
-    }>("https://api.goldprice.dev/v1/prices?symbol=XAU-USD-SPOT", key ? { headers: { Authorization: `Bearer ${key}` } } : {});
+    }>(`https://api.goldprice.dev/v1/prices?symbol=XAU-${encodeURIComponent(currency)}-SPOT`, key ? { headers: { Authorization: `Bearer ${key}` } } : {});
     const quote = data.symbols?.[0];
     if (quote?.is_stale) throw new ProviderError("invalid_response", "goldprice.dev returned a stale price");
+    if (quote?.quote_currency && quote.quote_currency !== currency) {
+      throw new ProviderError("invalid_response", `goldprice.dev returned ${quote.quote_currency}, expected ${currency}`);
+    }
     const price = Number(quote?.price);
     assertPositivePrice(price, this.getProviderName());
     this.lastUpdated = sourceTime(quote?.computed_at);
     return {
       providerName: this.getProviderName(),
-      currency: quote?.quote_currency ?? "USD",
+      currency: quote?.quote_currency ?? currency,
       rawPrice: price,
       unit: "per_troy_ounce",
       sourceTimestamp: this.lastUpdated,
