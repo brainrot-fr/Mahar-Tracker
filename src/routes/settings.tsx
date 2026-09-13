@@ -197,6 +197,24 @@ function SettingsPage() {
         </Card>
       )}
 
+      <Card className="mt-4 space-y-3">
+        <div>
+          <p className="font-medium text-fg">Help improve Mahar-Tracker</p>
+          <p className="mt-1 text-sm text-muted">
+            Found a problem? Let us know so we can improve the app.
+          </p>
+        </div>
+        <Button asChild variant="secondary" className="w-full">
+          <a
+            href="https://forms.gle/fqshkPVGdUG7end36"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Report a Bug
+          </a>
+        </Button>
+      </Card>
+
       <div className="mt-6 space-y-3">
         <Button type="button" variant="secondary" className="w-full" onClick={onExport}>
           Export my mahar records

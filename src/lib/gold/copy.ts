@@ -1,4 +1,4 @@
-export const APP_NAME = "Ukhiya";
+export const APP_NAME = "Mahar-Tracker";
 export const APP_TAGLINE = "Mahar tracker for zar-e-surkh-e-khalis";
 export const APP_SHORT_DESCRIPTION =
   "Record money set aside toward mahar and convert it to 24K gold-equivalent grams.";
