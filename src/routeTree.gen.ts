@@ -17,6 +17,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as EntriesIdRouteImport } from './routes/entries.$id'
 import { Route as EntriesNewRouteImport } from './routes/entries.new'
+import { Route as ApiDownloadApkRouteImport } from './routes/api/download.apk'
 import { Route as ApiV1DashboardRouteImport } from './routes/api/v1/dashboard'
 import { Route as ApiV1EntriesRouteImport } from './routes/api/v1/entries'
 import { Route as ApiV1ExportRouteImport } from './routes/api/v1/export'
@@ -64,6 +65,11 @@ const EntriesNewRoute = EntriesNewRouteImport.update({
   path: '/entries/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDownloadApkRoute = ApiDownloadApkRouteImport.update({
+  id: '/api/download/apk',
+  path: '/api/download/apk',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiV1DashboardRoute = ApiV1DashboardRouteImport.update({
   id: '/api/v1/dashboard',
   path: '/api/v1/dashboard',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/entries/$id': typeof EntriesIdRoute
   '/entries/new': typeof EntriesNewRoute
+  '/api/download/apk': typeof ApiDownloadApkRoute
   '/api/v1/dashboard': typeof ApiV1DashboardRoute
   '/api/v1/entries': typeof ApiV1EntriesRoute
   '/api/v1/export': typeof ApiV1ExportRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/entries/$id': typeof EntriesIdRoute
   '/entries/new': typeof EntriesNewRoute
+  '/api/download/apk': typeof ApiDownloadApkRoute
   '/api/v1/dashboard': typeof ApiV1DashboardRoute
   '/api/v1/entries': typeof ApiV1EntriesRoute
   '/api/v1/export': typeof ApiV1ExportRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/entries/$id': typeof EntriesIdRoute
   '/entries/new': typeof EntriesNewRoute
+  '/api/download/apk': typeof ApiDownloadApkRoute
   '/api/v1/dashboard': typeof ApiV1DashboardRoute
   '/api/v1/entries': typeof ApiV1EntriesRoute
   '/api/v1/export': typeof ApiV1ExportRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/entries/$id'
     | '/entries/new'
+    | '/api/download/apk'
     | '/api/v1/dashboard'
     | '/api/v1/entries'
     | '/api/v1/export'
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/entries/$id'
     | '/entries/new'
+    | '/api/download/apk'
     | '/api/v1/dashboard'
     | '/api/v1/entries'
     | '/api/v1/export'
@@ -187,6 +198,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/entries/$id'
     | '/entries/new'
+    | '/api/download/apk'
     | '/api/v1/dashboard'
     | '/api/v1/entries'
     | '/api/v1/export'
@@ -204,6 +216,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   EntriesIdRoute: typeof EntriesIdRoute
   EntriesNewRoute: typeof EntriesNewRoute
+  ApiDownloadApkRoute: typeof ApiDownloadApkRoute
   ApiV1DashboardRoute: typeof ApiV1DashboardRoute
   ApiV1EntriesRoute: typeof ApiV1EntriesRoute
   ApiV1ExportRoute: typeof ApiV1ExportRoute
@@ -270,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EntriesNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/download/apk': {
+      id: '/api/download/apk'
+      path: '/api/download/apk'
+      fullPath: '/api/download/apk'
+      preLoaderRoute: typeof ApiDownloadApkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/dashboard': {
       id: '/api/v1/dashboard'
       path: '/api/v1/dashboard'
@@ -324,6 +344,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   EntriesIdRoute: EntriesIdRoute,
   EntriesNewRoute: EntriesNewRoute,
+  ApiDownloadApkRoute: ApiDownloadApkRoute,
   ApiV1DashboardRoute: ApiV1DashboardRoute,
   ApiV1EntriesRoute: ApiV1EntriesRoute,
   ApiV1ExportRoute: ApiV1ExportRoute,

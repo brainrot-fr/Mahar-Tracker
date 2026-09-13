@@ -63,9 +63,6 @@ pushed. Configure these GitHub Actions values before creating the first tag:
   `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`
 
 Encode the upload keystore for `ANDROID_KEYSTORE_BASE64` with `base64 -w 0 your-upload-key.jks`.
-The workflow uploads the APK to the GitHub release. Set this one-time Vercel environment variable
-for the production web deployment:
-
-`VITE_ANDROID_APK_URL=https://github.com/brainrot-fr/Mahar-Tracker/releases/latest/download/app-release.apk`
-
-Because the URL uses `latest`, every later tag automatically becomes the APK served by the website.
+The workflow uploads `app-release.apk` to the GitHub release. The website's `/download` page uses
+`/api/download/apk`, which finds the newest public GitHub release and redirects to its APK asset.
+No APK URL environment variable is required, so each later tag becomes available automatically.
